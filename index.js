@@ -1,179 +1,143 @@
-const canvas = d3.select('.canvas')
-const colorInput = d3.select('#colorPicker')
-const marker = d3.select('.marker')
-const clearButton = d3.select('[data-clear]')
-const saveButton = d3.select('[data-save]')
-const undoButton = d3.select('[data-undo]')
-const copyButton = d3.select('[data-copy]')
-const textArea = d3.select('#css')
-const drawArea = d3.select('.draw-area')
-const range = d3.select('#columns')
-
-const width = drawArea.node().offsetWidth
-const height = drawArea.node().offsetHeight
-let columns = 30
-const multiplier = height / width
-let rows = columns * multiplier
-let cellSize = 100 / columns
-let rowSize = 100 / rows
-let isPressed = false
-
-const bisect = d3.bisector((d) => d)
-
-const dx = (posX) => {
-	const stepX = 1 / (columns - 1)
-	const dataX = d3.range(0, 100, stepX)
-	const indexX = bisect.center(dataX, posX / width)
-	return (dataX[indexX] * 100).toFixed(2)
+let block = document.getElementById("block");
+let mouseDw = 0;
+var colorSelected = 1;
+var colorValue1 = "#000000";
+var colorValue2 = "#ffffff00";
+var pureColor = ["#000000", "#000000"];
+var btt = 1;
+document.body.addEventListener("mouseup", () => {
+    mouseDw = 0;
+});
+document.getElementById("taskArea").addEventListener("mousedown", () => {
+    mouseDw = 1;
+});
+block.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+});
+block.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    mouseDw = 1;
+    btt = e.buttons;
+    draw(e);
+});
+block.addEventListener("mouseup", (e) => {
+    mouseDw = 0;
+});
+block.addEventListener("mousemove", (e) => {
+    if (mouseDw) {
+        e.stopPropagation();
+        draw(e);
+    }
+});
+function draw(e) {
+    if (e.target.id != "block") {
+        switch (btt) {
+            case 1:
+                e.target.style.background = `${colorValue1}`;
+                break;
+            case 2:
+                e.target.style.background = `${colorValue2}`;
+                break;
+        }
+    }
+}
+for (let i = 0; i < 1024; i++) {
+    let pixel = document.createElement("div");
+    pixel.className = "pixel";
+    pixel.style.background = "rgba(0,0,0,0)";
+    block.appendChild(pixel);
+}
+function colorClick(ele) {
+    let inputs = document.getElementsByClassName("color active");
+    inputs[0].classList.remove("active");
+    ele.className = "color active";
+    setColor(colorSelected, ele.id);
+}
+function changClsl(ele, id) {
+    document.getElementsByClassName("ct ctacc")[0].classList.remove("ctacc");
+    ele.className = "ct ctacc";
+    colorSelected = id;
+    document.getElementById("inpColor").value = pureColor[colorSelected - 1];
+    document.getElementById("inpColor").click();
+    document.getElementById("opBox").style.display = "block";
+}
+document.body.onmousedown = (e) => {
+    if (e.target.id != "opBox" && e.target.id != "opacity") {
+        document.getElementById("opBox").style.display = "none";
+    }
+};
+function setColor(id, color) {
+    document.getElementById("color" + id + "").style.background = color;
+    color.value = color;
+    switch (id) {
+        case 1:
+            colorValue1 = color;
+            break;
+        case 2:
+            colorValue2 = color;
+            break;
+    }
+}
+//input color
+function colorInp(color) {
+    pureColor[colorSelected - 1] = color;
+    setColor(colorSelected, color);
 }
 
-const dy = (posY) => {
-	const stepY = 1 / (rows - 1)
-	const dataY = d3.range(0, 1, stepY)
-	const indexY = bisect.center(dataY, posY / height)
-	return (dataY[indexY] * 100).toFixed(2)
+let cnv = document.getElementById("cnv");
+let ctx = cnv.getContext("2d");
+function save() {
+    let element = document.getElementsByClassName("pixel");
+    for (let i = 0; i < element.length; i++) {
+        let ele = element[i];
+        var boundaries = {
+            principal: block.getBoundingClientRect(),
+            secundario: ele.getBoundingClientRect()
+        };
+        cords = {
+            y: boundaries.secundario.top - boundaries.principal.top,
+            x: boundaries.secundario.left - boundaries.principal.left
+        };
+        ctx.beginPath();
+        ctx.fillStyle = ele.style.background;
+        console.log(ctx.fillStyle, ele.style.background);
+        ctx.rect(cords.x, cords.y, 20, 20);
+        ctx.fill();
+    }
+    let link = document.createElement("a");
+    link.href = cnv.toDataURL();
+    link.download = `${document.getElementById("textName").value}`;
+    document.body.appendChild(link);
+    link.click();
+    ctx.clearRect(0, 0, cnv.width, cnv.height);
+    ctx.fill();
 }
 
-let bg = []
-let bgPosition = []
-
-const draw = () => {
-	drawArea
-		.style('background-image', bg.join(','))
-		.style('background-position', bgPosition.join(','))
+function opacity(value) {
+    colorValue1 = colorToRGBA(colorValue1, value);
+    setColor(colorSelected, colorValue1);
 }
-
-const updateText = () => {
-	textArea.html(`
-aspect-ratio: 4 / 3;
-background-image: ${bg.join(',')};
-background-size: calc(100% / ${columns}) calc(100% / ${rows});
-background-position: ${bgPosition.join(',')};
-background-repeat: no-repeat;
-	`)
+function colorToRGBA(color, opacity) {
+    var parts;
+    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
+        var r = parseInt(color.substring(1, 3), 16);
+        var g = parseInt(color.substring(3, 5), 16);
+        var b = parseInt(color.substring(5, 7), 16);
+        parts = [r, g, b];
+    } else if (/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.test(color)) {
+        parts = color.match(/\d+/g);
+    } else if (/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d*\.?\d+)\)$/.test(color)) {
+        parts = color.match(/\d+/g);
+    } else return NaN;
+    return (
+        "rgba(" +
+        parts[0] +
+        ", " +
+        parts[1] +
+        ", " +
+        parts[2] +
+        ", " +
+        opacity +
+        ")"
+    );
 }
-
-const shouldDraw = (newBgValue, newBgPositionValue) => {
-	if (!isPressed) return false
-	if (!bg.length) return true
-	if (bg[0] !== newBgValue) return true
-	return bgPosition[0] !== newBgPositionValue
-}
-
-canvas.on('click', (e) => {
-	const color = colorInput.node().value
-	const [posX, posY] = d3.pointer(e)
-	const x = dx(posX)
-	const y = dy(posY)
-	
-	bg = [ `linear-gradient(${color}, ${color})`, ...bg ]
-	bgPosition = [ `${x}% ${y}%`, ...bgPosition]
-	
-	draw()
-	updateText()
-})
-
-canvas
-	.on('mouseover', () => {
-		marker.style('opacity', 1)
-	})
-	.on('mouseout', () => {
-		marker.style('opacity', 0)
-	})
-	.on('mousedown', () => {
-		isPressed = true
-	})
-	.on('mouseup', () => {
-		isPressed = false
-	})
-
-canvas.on('mousemove', (e) => {
-	const color = colorInput.node().value
-	const [posX, posY] = d3.pointer(e)
-	const x = dx(posX)
-	const y = dy(posY)
-	
-	marker
-		.style('background-position', `${x}% ${y}%`)
-	
-	const newBgValue = `linear-gradient(${color}, ${color})`
-	const newBgPositionValue = `${x}% ${y}%`
-	
-	if (!shouldDraw(newBgValue, newBgPositionValue)) return
-	
-	bg = [ newBgValue, ...bg ]
-	bgPosition = [ newBgPositionValue, ...bgPosition]
-
-	draw()
-	updateText()
-})
-
-colorInput.on('input', () => {
-	marker.style('--bg', colorInput.node().value)
-})
-
-const clear = () => {
-	bg = []
-	bgPosition = []
-	textArea.html('')
-	drawArea
-		.style('background-image', '')
-		.style('background-position', '')
-		.style('background-size', '')
-}
-
-clearButton.on('click', clear)
-
-saveButton.on('click', () => {
-	const art = textArea.node().value
-	localStorage.setItem('art', art)
-})
-
-const restoreSavedArt = () => {
-	const savedArt = localStorage.getItem('art')
-	
-	if (!savedArt) return
-	drawArea.attr('style', savedArt)
-	textArea.html(savedArt)
-}
-
-const setColumnCount = () => {
-	columns = range.node().value
-	rows = columns * multiplier
-	cellSize = 100 / columns
-	rowSize = 100 / rows
-	canvas.style('--cellSizeCol', `${cellSize}%`)
-	canvas.style('--cellSizeRow', `${rowSize}%`)
-	canvas.style('--colCount', columns)
-}
-
-setColumnCount()
-restoreSavedArt()
-
-window.addEventListener('resize', () => {
-	if (window.innerWidth > width + 100) return
-	setColumnCount()
-})
-
-range.on('input', setColumnCount)
-
-copyButton.on('click', (e) => {
-	const copyText = textArea.node()
-
-  copyText.select()
-  copyText.setSelectionRange(0, 99999)
-	navigator.clipboard.writeText(copyText.value)
-	copyButton.text('Copied!')
-	
-	setTimeout(() => {
-		copyButton.text('Copy to clipboard')
-	}, 3000)
-})
-
-undoButton.on('click', () => {
-	bg.splice(0, 1)
-	bgPosition.splice(0, 1)
-	
-	draw()
-	updateText()
-})

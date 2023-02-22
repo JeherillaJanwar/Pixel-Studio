@@ -1,165 +1,326 @@
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <style>
-  * {
-	box-sizing: border-box;
-}
-
-body {
-	--space: clamp(1rem, 2vw, 2.5rem);
-	--shadow: 0.6rem 0.6rem 0;
-	font-family: 'VT323', monospace;
-	font-size: 1.2rem;
-	margin: 0;
-	padding: calc(var(--space) * 2) var(--space);
-	background: lightblue;
-	accent-color: turquoise;
-	min-height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-button {
-	font-family: inherit;
-	font-size: inherit;
-	background: orchid;
-	border: 0.22rem solid;
-	border-radius: 0.3rem;
-	padding: 0.2rem 1rem;
-	box-shadow: 0.2rem 0.2rem 0;
-}
-
-button:hover,
-button:focus-visible {
-	background: orange;
-}
-
-input[type="color"] {
-	border: 0.22rem solid;
-	border-radius: 0.3rem;
-	box-shadow: 0.2rem 0.2rem 0;
-	margin-right: 2rem;
-}
-
-h1 {
-	font-family: 'Press Start 2P', cursive;
-	font-weight: 400;
-	margin: 0 0 var(--space);
-	text-shadow: 0.1em 0.1em 0 orange;
-}
-
-p {
-	margin: 0;
-}
-
-header {
-	outline: 0.3rem solid;
-	padding: var(--space);
-	margin-bottom: calc(var(--space) * 2);
-	box-shadow: var(--shadow);
-	background: peachpuff;
-}
-
-.wrapper {
-	width: 100%;
-	max-width: 800px;
-	margin: 0 auto;
-}
-
-@media (min-width: 70em) {
-	.wrapper {
-		max-width: 1200px;
-		display: grid;
-		grid-template-columns: 2fr 1fr;
-		gap: 0 2rem;
+	body {
+		margin: 0;
+		overflow: hidden;
 	}
-}
 
-.controls {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 1rem;
-	margin-bottom: calc(var(--space) * 1.5);
-	grid-column: 1;
-}
+	* {
+		font-family: consolas;
+	}
 
-.canvas {
-	--sizeX: var(--cellSizeCol, calc(100% / var(--colCount, 40)));
-	--sizeY: var(--cellSizeRow, calc(100% / var(--rowCount, 30)));
-	
-	grid-column: 1;
-	position: relative;
-	outline: 0.3rem solid;
-	box-shadow: var(--shadow);
-	margin-bottom: calc(var(--space) * 2);
-	background: linear-gradient(to right, transparent calc(100% - 1px), lightgrey 0),
-		linear-gradient(to bottom, transparent calc(100% - 1px), lightgrey 0), white;
-	background-size: var(--sizeX) 100%, 100% var(--sizeY);
-}
+	.pixel {
+		width: 20px;
+		height: 20px;
+		user-select: none;
+		background: rgba(0, 0, 0, 0);
+	}
 
-.draw-area {
-	position: relative;
-	aspect-ratio: 4 / 3;
-	background-repeat: no-repeat;
-	background-size: var(--sizeX) var(--sizeY);
-}
+	.color {
+		width: 30px;
+		height: 30px;
+		margin: 10px 4px;
+		border: solid 1px #66666e;
+		border-radius: 5px;
+	}
 
-.marker {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	background-image: linear-gradient(to right, var(--bg, black), var(--bg, black));
-	aspect-ratio: 1;
-	background-size: var(--sizeX) var(--sizeY);
-	background-repeat: no-repeat;
-	opacity: 0;
-}
+	.ct {
+		width: 35px;
+		height: 35px;
+		margin: 10px 4px;
+		border: solid 1px #e6e6e9;
+		border-radius: 5px;
+		background-image: var(--png);
+		background-size: 10px;
+		margin-left: auto;
+		margin-right: auto;
+	}
 
-.css label {
-	display: block;
-}
+	.ct div {
+		width: 35px;
+		height: 35px;
+	}
 
-textarea {
-	display: block;
-	width: 100%;
-	border: 0.3rem 0.3rem 0;
-	box-shadow: var(--shadow);
-	margin-bottom: var(--space);
-	padding: 0 1rem;
-}
+	.ctacc {
+		outline: solid 2px white;
+	}
 
-[data-undo] {
-	background: orange;
-}
+	.active {
+		outline: solid 2px white;
+	}
+
+	#color1 {
+		background: black;
+	}
+
+	#color2 {
+		background: rgba(0, 0, 0, 0);
+	}
+
+	#controls {
+		width: 50px;
+		border-top: solid 2px #66666e;
+		padding-top: 20px;
+		margin-top: 20px;
+	}
+
+	.active {
+		outline: solid 2px white;
+	}
+
+	#block {
+		margin: auto;
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: row;
+		width: 640px;
+		height: 640px;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background-size: 40px;
+		background-image: var(--png);
+		transform: scale(0.9);
+	}
+
+	#taskArea {
+		position: relative;
+		width: 100%;
+		height: calc(100vh - 50px);
+	}
+
+	#all {
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+	}
+
+	#leftbar {
+		width: 50px;
+		background: black;
+		height: calc(100vh - 51.1px);
+		padding: 0 5px;
+		background: #000000;
+		display: flex;
+		flex-wrap: nowrap;
+		flex-direction: column;
+		align-items: center;
+		overflow-y: auto;
+		overflow-x: hidden;
+		align-content: center;
+	}
+
+	#input {
+		padding-top: 10px;
+		height: fit-content;
+	}
+
+	#opacity {
+		width: 220px;
+	}
+
+	.back {
+		position: absolute;
+		background: #F4F4F6;
+		z-index: 110;
+		left: 70px;
+		transform: translatey(-25px);
+		padding-right: 10px;
+		display: none;
+	}
+
+	#lb {
+		display: flex;
+		width: 45px;
+		height: 45px;
+		background: green;
+		background: linear-gradient(137deg,
+				rgba(255, 0, 61, 1) 0%,
+				rgba(43, 238, 157, 1) 50%,
+				rgba(0, 0, 255, 1) 100%);
+		border-radius: 3px;
+		margin: auto;
+		text-align: center;
+		align-items: center;
+		justify-content: center;
+	}
+
+	#lb span {
+		font-size: 40px;
+		display: block;
+		text-align: center;
+		color: white;
+		backdrop-filter: blur(13px);
+		border-radius: 3px;
+		transition: 200ms;
+	}
+
+	#lb:hover span {
+		transform: scale(1.2);
+	}
+
+	#inpColor {
+		position: absolute;
+		pointer-events: none;
+		visibility: hidden;
+		left: 70px;
+	}
+
+	:root {
+		--png: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgNDk1LjQ4NDgxOCA0OTUuNDg0ODAyIiB3aWR0aD0iNDk1LjQ4NDgxOCIgaGVpZ2h0PSI0OTUuNDg0ODAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyZWN0IHdpZHRoPSIyNDcuNzQyNDAxIiBoZWlnaHQ9IjI0Ny43NDI0MDEiIHN0eWxlPSJmaWxsOiByZ2IoMjMwLCAyMzAsIDIzMyk7Ii8+CiAgPHJlY3Qgd2lkdGg9IjI0Ny43NDI0MDEiIGhlaWdodD0iMjQ3Ljc0MjQwMSIgc3R5bGU9ImZpbGw6IHJnYigxNTMsIDE1MywgMTYxKTsiIHg9IjI0Ny43NDI0MTYiLz4KICA8cmVjdCB3aWR0aD0iMjQ3Ljc0MjQwMSIgaGVpZ2h0PSIyNDcuNzQyNDAxIiBzdHlsZT0iZmlsbDogcmdiKDE1MywgMTUzLCAxNjEpOyIgeD0iMC4wMDAwMTUiIHk9IjI0Ny43NDI0MDEiLz4KICA8cmVjdCB3aWR0aD0iMjQ3Ljc0MjQwMSIgaGVpZ2h0PSIyNDcuNzQyNDAxIiBzdHlsZT0iZmlsbDogcmdiKDIzMCwgMjMwLCAyMzMpOyIgeD0iMjQ3Ljc0MjQxNiIgeT0iMjQ3Ljc0MjQwMSIvPgo8L3N2Zz4=);
+	}
+
+
+	#topdiv {
+		height: 50px;
+		width: 100vw;
+		display: flex;
+		align-items: center;
+		background: #000000;
+		border-bottom: solid 2px #66666E;
+		justify-content: space-between;
+		z-index: 99;
+		position: relative;
+	}
+
+	#topdiv button {
+		padding: 7px;
+		margin: 0 10px;
+		color: #F4F4F6;
+		border-radius: 5px;
+		background: #66666E;
+		transition: 200ms;
+	}
+
+	#topdiv button:hover {
+		filter: brightness(1.1);
+	}
+
+	#cnv {
+		position: fixed;
+		top: -200vh;
+	}
+
+	#textName {
+		font-size: 17px;
+		border: none;
+		color: #9999A1;
+		background: transparent;
+		margin: 0 10px;
+		outline: none;
+	}
+
+
+	#opacity::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		/* remove a aparencia padão */
+		width: 4px;
+		height: 25px;
+		border-radius: 5px;
+		background-color: white;
+	}
+
+	.back {
+		margin-top: 5px;
+		text-align: center;
+		align-items: center;
+		margin-left: auto;
+		margin-right: auto;
+		background-image: var(--png);
+		background-repeat: repeat;
+		background-size: 20px;
+		width: 210PX;
+		height: 20PX;
+		border-radius: 5px;
+		margin-top: 15px;
+		box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.10);
+		border: solid 3px white;
+		-webkit-user-drag: none;
+		-khtml-user-drag: none;
+		-moz-user-drag: none;
+		-o-user-drag: none;
+		outline: solid 2px #9999A1;
+	}
+
+	input[type=range] {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 210PX;
+		height: 20PX;
+		top: 0;
+		left: 0;
+		background: linear-gradient(270deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+		margin: 0px;
+		outline: none;
+		-webkit-user-drag: none;
+		-khtml-user-drag: none;
+		-moz-user-drag: none;
+		-o-user-drag: none;
+
+	}
+
+	#opacity::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		border: solid 2px #9999A1;
+		width: 9px;
+		height: 19px;
+		background-color: white;
+		-webkit-user-drag: none;
+		-khtml-user-drag: none;
+		-moz-user-drag: none;
+		-o-user-drag: none;
+
+	}
 </style>
-<div class="wrapper">
-  <header>
-    <h1>Pixel Art Studio</h1>
-    <p>Make your own single-div pixel art with CSS.</p>
-  </header>
-  <div class="controls">
-    <label for="colorPicker">Color picker</label>
-    <input type="color" id="colorPicker" />
-    <label for="cellSize">Columns</label>
-    <input type="range" min="10" max="60" id="columns" step="10" value="30" />
-    <button data-undo>Undo</button>
-    <button data-clear>Clear</button>
-    <button data-save>Save</button>
-  </div>
-  <div class="canvas">
-    <div class="draw-area">
-      <div class="marker"></div>
-    </div>
-  </div>
-  <div class="css">
-    <label for="css">CSS:</label>
-    <textarea name="cssCode" id="css" rows="10"></textarea>
-    <button data-copy>Copy to clipboard</button>
-  </div>
+<div id="topdiv">
+	<input type="text" name="" id="textName" value="✎ new project " spellcheck="false">
+	<button id="save" onclick="save()">Export png </button>
+</div>
+<div id="all">
+	<div id="leftbar">
+		<div id="colors">
+			<div class="color active" id="#000000" style="background:#000000;" onclick="colorClick(this)"></div>
+			<div class="color" id="#ffffff" style="background:#ffffff;" onclick="colorClick(this)"></div>
+			<div class="color" id="#B2FF9E" style="background:#B2FF9E;" onclick="colorClick(this)"></div>
+			<div class="color" id="#AFFC41" style="background:#AFFC41;" onclick="colorClick(this)"></div>
+			<div class="color" id="#1DD3B0" style="background:#1DD3B0;" onclick="colorClick(this)"></div>
+			<div class="color" id="#086375" style="background:#086375;" onclick="colorClick(this)"></div>
+			<div class="color" id="#3C1642" style="background:#3C1642;" onclick="colorClick(this)"></div>
+		</div>
+		<div id="input">
+			<input type="color" name="color" id="inpColor" oninput="colorInp(this.value)">
+			<div class="back" id="opBox">
+				<input type="range" name="" id="opacity" oninput="opacity(this.value)" value="1" max="1" min="0"
+					step="0.01">
+			</div>
+
+		</div>
+		<div id="controls">
+			<div class="ct ctacc" onclick="changClsl(this,1)">
+				<div id="color1">
+
+				</div>
+			</div>
+			<div class="ct" onclick="changClsl(this,2)">
+				<div id="color2">
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="taskArea">
+		<div id="block">
+
+		</div>
+	</div>
+
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.7.0/d3.min.js"></script>
+<canvas id="cnv" width="640" height="640">
+
+</canvas>
 
 <script src="index.js"></script>
